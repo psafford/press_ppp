@@ -1,0 +1,39 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+dataset = pd.read_csv('press_results.csv', sep=',')
+dataset = dataset.astype(str)
+blue_data = dataset[(dataset.type == 'blue')]
+brown_data = dataset[(dataset.type == 'brown')]
+dataset_ppp = dataset
+
+# to specify live ball turnovers
+#https://www.inpredictable.com/2015/11/live-ball-vs-dead-ball-turnovers.html
+#https://www.teamrankings.com/blog/ncaa-basketball/turnovers-do-you-want-them-dead-or-live-stat-geek-idol
+
+dataset_ppp['points'] = 0
+dataset_ppp['possessions'] = 1
+dataset_ppp['points'] = pd.np.where(dataset_ppp.result.str.contains("steal"), "0",
+                        pd.np.where(dataset_ppp.result.str.contains("3ptm"), "3",
+                        pd.np.where(dataset_ppp.result.str.contains("2pta"), "0",
+                        pd.np.where(dataset_ppp.result.str.contains("2ptm"), "2",
+                        pd.np.where(dataset_ppp.result.str.contains("3pta"), "0",
+                        pd.np.where(dataset_ppp.result.str.contains("oob off them"), "0",
+                        pd.np.where(dataset_ppp.result.str.contains("charge"), "0",
+                        pd.np.where(dataset_ppp.result.str.contains("travel"), "0", 'other'))))))))
+
+gen_ppp = dataset_ppp['points']
+gen_ppp = [x for x in gen_ppp if x != "other"]
+gen_ppp = list(map(int, gen_ppp)) 
+print(sum((gen_ppp))/len(gen_ppp)) # this puts out .3065 for now ... might change
+
+
+#insert the above statement replacing all of the list that ended with a conclusion
+#then insert the hudl season average for ppp into the others?
+#shot and then orb is season average plus the above number?
+#then measure steals, orbs, and fouls
+
+
+#get rid of other to find the points per possession average
+#also need to look on hudl to find ppp for overall situations
