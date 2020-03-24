@@ -1,0 +1,60 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+dataset = pd.read_csv('press_results.csv', sep=',')
+dataset = dataset.astype(str)
+blue_data = dataset[(dataset.type == 'blue')]
+brown_data = dataset[(dataset.type == 'brown')]
+dataset_ppp = dataset
+
+
+#4 
+blue_data['refined'] = pd.np.where(blue_data.result.str.contains("steal"), "steal",
+                        pd.np.where(blue_data.result.str.contains("charge"), "TO(dead)",
+                        pd.np.where(blue_data.result.str.contains("jump ball"), "TO(dead)",
+                        pd.np.where(blue_data.result.str.contains("travel"), "TO(dead)",
+                        pd.np.where(blue_data.result.str.contains("3pta and reb"), "orb",
+                        pd.np.where(blue_data.result.str.contains("2pta and reb"), "orb",
+                        pd.np.where(blue_data.result.str.contains("foul"), "foul",
+                        pd.np.where(blue_data.result.str.contains("oob off them"), "TO(dead)",
+                        pd.np.where(blue_data.result.str.contains("shooting foul"), "foul", 'shot')))))))))
+blue_group = blue_data['refined'].value_counts()
+blue_group = pd.DataFrame({'result':blue_group.index, 'count':blue_group.values})
+
+blue_group['Perc'] = blue_group['count']/sum(blue_group['count'])
+#turnover dead includes, oob, charges, jump balls, travel
+
+blue_group.plot(x="result", y=["Perc"], kind="bar")
+
+plt.xlabel('Results') 
+plt.ylabel('Percent of occurance') 
+plt.title('Blue results by percentage') 
+
+plt.savefig('blue_press_results.png')
+
+plt.clf()
+
+brown_data['refined'] = pd.np.where(brown_data.result.str.contains("steal"), "steal",
+                        pd.np.where(brown_data.result.str.contains("charge"), "TO(dead)",
+                        pd.np.where(brown_data.result.str.contains("jump ball"), "TO(dead)",
+                        pd.np.where(brown_data.result.str.contains("travel"), "TO(dead)",
+                        pd.np.where(brown_data.result.str.contains("3pta and reb"), "orb",
+                        pd.np.where(brown_data.result.str.contains("2pta and reb"), "orb",
+                        pd.np.where(brown_data.result.str.contains("foul"), "foul",
+                        pd.np.where(brown_data.result.str.contains("oob off them"), "TO(dead)",
+                        pd.np.where(brown_data.result.str.contains("shooting foul"), "foul", 'shot')))))))))
+brown_group = brown_data['refined'].value_counts()
+brown_group = pd.DataFrame({'result':brown_group.index, 'count':brown_group.values})
+
+brown_group['Perc'] = brown_group['count']/sum(brown_group['count'])
+#turnover dead includes, oob, charges, jump balls, travel
+
+brown_group.plot(x="result", y=["Perc"], kind="bar")
+
+plt.xlabel('Results') 
+plt.ylabel('Percent of occurance') 
+plt.title('brown results by percentage') 
+
+plt.savefig('brown_press_results.png')
+
