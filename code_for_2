@@ -1,0 +1,20 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+dataset = pd.read_csv('press_results.csv', sep=',')
+dataset = dataset.astype(str)
+blue_data = dataset[(dataset.type == 'blue')]
+brown_data = dataset[(dataset.type == 'brown')]
+dataset_ppp = dataset
+
+dataset_tot_count = dataset['type'].value_counts()
+
+dataset_tot_count.plot(kind='bar')
+
+plt.ylabel('Count') 
+plt.title('Press Occurances') 
+
+plt.savefig('count_press_occurances.png')
+
+plt.clf()
