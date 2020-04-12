@@ -1,39 +1,57 @@
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
 dataset = pd.read_csv('press_results.csv', sep=',')
 dataset = dataset.astype(str)
-blue_data = dataset[(dataset.type == 'blue')]
-brown_data = dataset[(dataset.type == 'brown')]
 dataset_ppp = dataset
-
-# to specify live ball turnovers
-#https://www.inpredictable.com/2015/11/live-ball-vs-dead-ball-turnovers.html
-#https://www.teamrankings.com/blog/ncaa-basketball/turnovers-do-you-want-them-dead-or-live-stat-geek-idol
+dataset_ppp = dataset_ppp[dataset_ppp.result != 'na']
 
 dataset_ppp['points'] = 0
 dataset_ppp['possessions'] = 1
-dataset_ppp['points'] = pd.np.where(dataset_ppp.result.str.contains("steal"), "0",
-                        pd.np.where(dataset_ppp.result.str.contains("3ptm"), "3",
-                        pd.np.where(dataset_ppp.result.str.contains("2pta"), "0",
-                        pd.np.where(dataset_ppp.result.str.contains("2ptm"), "2",
-                        pd.np.where(dataset_ppp.result.str.contains("3pta"), "0",
-                        pd.np.where(dataset_ppp.result.str.contains("oob off them"), "0",
-                        pd.np.where(dataset_ppp.result.str.contains("charge"), "0",
-                        pd.np.where(dataset_ppp.result.str.contains("travel"), "0", 'other'))))))))
+dataset_ppp['points'] = np.where(dataset_ppp['result'] == 'steal', '0', dataset_ppp['points'])
+dataset_ppp['points'] = np.where(dataset_ppp['result'] == '2pta', '0', dataset_ppp['points'])
+dataset_ppp['points'] = np.where(dataset_ppp['result'] == '2pta and reb', '.93', dataset_ppp['points'])
+dataset_ppp['points'] = np.where(dataset_ppp['result'] == '2pta and foul', '1.38', dataset_ppp['points'])
+dataset_ppp['points'] = np.where(dataset_ppp['result'] == '2ptm and foul', '2.69', dataset_ppp['points'])
+dataset_ppp['points'] = np.where(dataset_ppp['result'] == '2ptm', '2', dataset_ppp['points'])
+dataset_ppp['points'] = np.where(dataset_ppp['result'] == '3pta', '0', dataset_ppp['points'])
+dataset_ppp['points'] = np.where(dataset_ppp['result'] == '3ptm', '3', dataset_ppp['points'])
+dataset_ppp['points'] = np.where(dataset_ppp['result'] == '3pta and reb', '.93', dataset_ppp['points'])
+dataset_ppp['points'] = np.where(dataset_ppp['result'] == 'oob off them', '0', dataset_ppp['points'])
+dataset_ppp['points'] = np.where(dataset_ppp['result'] == 'oob off us', '.93', dataset_ppp['points'])
+dataset_ppp['points'] = np.where(dataset_ppp['result'] == 'charge', '0', dataset_ppp['points'])
+dataset_ppp['points'] = np.where(dataset_ppp['result'] == 'jump ball', '.47', dataset_ppp['points'])
+dataset_ppp['points'] = np.where(dataset_ppp['result'] == 'time out', '.93', dataset_ppp['points'])
+dataset_ppp['points'] = np.where(dataset_ppp['result'] == 'non shot foul', '1.047', dataset_ppp['points'])
+dataset_ppp['points'] = np.where(dataset_ppp['result'] == '10 sec', '0', dataset_ppp['points'])
+dataset_ppp['points'] = np.where(dataset_ppp['result'] == 'kicked ball', '.93', dataset_ppp['points'])
+dataset_ppp['points'] = np.where(dataset_ppp['result'] == 'half court', '.93', dataset_ppp['points'])
+dataset_ppp['points'] = np.where(dataset_ppp['result'] == 'travel', '0', dataset_ppp['points'])
+
+blue_data = dataset_ppp[(dataset_ppp.type == 'blue')]
+brown_data = dataset_ppp[(dataset_ppp.type == 'brown')]
+
+print(dataset_ppp.columns.values)
+print(dataset_ppp['points'].value_counts())
 
 gen_ppp = dataset_ppp['points']
-gen_ppp = [x for x in gen_ppp if x != "other"]
-gen_ppp = list(map(int, gen_ppp)) 
-print(sum((gen_ppp))/len(gen_ppp)) # this puts out .3065 for now ... might change
+gen_ppp = list(map(float, gen_ppp)) 
+blue_ppp = blue_data['points']
+blue_ppp = list(map(float, blue_ppp)) 
+brown_ppp = brown_data['points']
+brown_ppp = list(map(float, brown_ppp)) 
+print('The ppp we have for overall pressing is ', sum((gen_ppp))/len(gen_ppp)) 
+print('The ppp we have for brown pressing is ',  sum((brown_ppp))/len(brown_ppp)) 
+print('The ppp we have for blue pressing is ', sum((blue_ppp))/len(blue_ppp)) 
+print('The ppp we have overall is .93') 
+
+#graph is created in presentation
 
 
-#insert the above statement replacing all of the list that ended with a conclusion
-#then insert the hudl season average for ppp into the others?
-#shot and then orb is season average plus the above number?
-#then measure steals, orbs, and fouls
 
-
-#get rid of other to find the points per possession average
-#also need to look on hudl to find ppp for overall situations
+# logic for non shot foul value 
+#average foul count per half: 10
+#average opp ft shooting %: 68.8
+#.93 * .6 + .3 * (.48 * 2 + .21 *1 ) + .1 * .69*2
